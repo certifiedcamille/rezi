@@ -163,7 +163,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--lime);outline-o
 
 /* pop-out Rezi */
 .glass.over{overflow:visible;z-index:3}
-.glass.over canvas{transform:scale(1.28);transform-origin:50% 55%;transition:transform .5s cubic-bezier(.2,1.4,.4,1)}
+.glass canvas{transform:scale(var(--grow,1));transform-origin:50% 55%;transition:transform .6s cubic-bezier(.2,1.4,.4,1)}
+.glass.over{overflow:visible;z-index:3}
 .glass.cracked::after{content:"";position:absolute;inset:0;pointer-events:none;background:
   linear-gradient(115deg,transparent 48%,rgba(255,255,255,.55) 49%,transparent 50.5%),
   linear-gradient(35deg,transparent 60%,rgba(255,255,255,.4) 61%,transparent 62%),
@@ -209,11 +210,11 @@ img{max-width:100%}[hidden]{display:none!important}
   <section class="screen attract" id="s-attract">
     <div>
       <p class="kicker">▶ ONE ACTION FOR OUR FUTURE</p>
-      <h1>REZI <small>The superbug is hungry. Keep it that way.</small></h1>
-      <p class="lede">Rezi is a superbug. Every wrong move with antibiotics is a <b>meal</b> for it. Starve it across the <b>7 spaces</b> where it hides: home, pharmacy, clinic, market, water, travel, street.</p>
+      <h1>REZI <small>Don't feed the superbug.</small></h1>
+      <p class="lede"><b>Every wrong move feeds the superbug.</b> 7 spaces. 7 choices. Keep him small.</p>
       <button class="bigbtn" id="start" type="button">TAP TO PLAY</button>
-      <p class="kicker blink" style="margin-top:1.4em">PRESS 1 · 2 · 3 TO CHOOSE</p>
-      <div class="spaces-legend" id="legend"></div>
+      <p class="kicker blink" style="margin-top:1.4em">TAP OR PRESS 1 · 2 · 3</p>
+      <div class="spaces-legend" id="legend" hidden></div>
     </div>
     <div class="device">
       <div class="device-top"><span>REZI</span><span>● LIVE</span></div>
@@ -226,9 +227,9 @@ img{max-width:100%}[hidden]{display:none!important}
   <!-- STRAIN -->
   <section class="screen" id="s-strain" hidden>
     <p class="kicker">STEP 1 · PICK YOUR STRAIN</p>
-    <h2 style="font-family:var(--display);font-size:clamp(1.8rem,4vw,3rem);margin:.2em 0">Which Rezi do you want to starve?</h2>
+    <h2 style="font-family:var(--display);font-size:clamp(1.8rem,4vw,3rem);margin:.2em 0">Pick your Rezi</h2>
     <div class="strains" id="strains"></div>
-    <div class="actions"><button class="bigbtn" id="go" type="button">START</button><span class="footnote">Colour doesn't change the game. It's just style.</span></div>
+    <div class="actions"><button class="bigbtn" id="go" type="button">START</button></div>
   </section>
 
   <!-- PLAY -->
@@ -246,17 +247,7 @@ img{max-width:100%}[hidden]{display:none!important}
         <p class="prompt" id="prompt"></p>
         <div class="choices" id="choices"></div>
         <div class="why" id="why" hidden><span class="tag" id="whytag"></span><p id="whytext"></p></div>
-        <div class="origin" id="origin" hidden>
-          <h4>HOW REZI JUST GOT STRONGER</h4>
-          <ol>
-            <li><em>🦠🦠🦠</em>Germs are everywhere. Most are harmless, some even help you.</li>
-            <li><em>💊</em>The antibiotic kills the weak ones. Rezi has a trick, so he survives.</li>
-            <li><em>🦠➡️🦠</em>Rezi multiplies and passes his trick to the germs next to him.</li>
-            <li><em>🛡️❌</em>Your helpful germs were killed too, so Rezi has the whole field.</li>
-            <li><em>🏠💊🏥🐓💧✈️🏫</em>Rezi hops to the next space, in you, on your hands, in water.</li>
-          </ol>
-          <p class="big">People don't become resistant. Germs do. Every needless dose picks the winners.</p>
-        </div>
+        
         <button class="next" id="next" type="button" hidden>NEXT SPACE ▶</button>
       </div>
     </div>
@@ -277,12 +268,12 @@ img{max-width:100%}[hidden]{display:none!important}
           <p class="sum" id="sum"></p>
           <div class="stats"><div>SCORE<b id="k-score"></b></div><div>SMART MOVES<b id="k-good"></b></div><div>REZI FED<b id="k-bad"></b></div><div>BEST STREAK<b id="k-streak"></b></div></div>
         </div>
-        <p class="truth"><b>People don't become resistant.</b> Germs do. Rezi learned these six tricks:</p>
-        <div class="tricks"><h3>HOW REZI FIGHTS BACK</h3><ul id="tricks"></ul></div>
+        <p class="truth"><b>People don't become resistant.</b> Germs do.</p>
+        <div class="tricks"><h3>REZI'S SIX TRICKS</h3><ul id="tricks"></ul></div>
         <div class="pledge" id="pledgebox">
-          <h3>SEAL YOUR ONE ACTION</h3>
+          <h3>PICK YOUR ONE ACTION</h3>
           <div class="pills" id="pills"></div>
-          <div class="namerow"><input id="pname" placeholder="Your name or handle (optional)" maxlength="28" autocomplete="off"><button class="bigbtn" id="seal" type="button" style="font-size:1.05em">SEAL PLEDGE</button></div>
+          <div class="namerow"><input id="pname" placeholder="Your name" maxlength="28" autocomplete="off"><button class="bigbtn" id="seal" type="button" style="font-size:1.05em">SEAL</button></div>
         </div>
         <div class="card" id="card" hidden></div>
         <div class="pledge" id="minibox" hidden><h3 id="minititle">LEADERBOARD</h3><div class="mini" id="minirows"></div></div>
@@ -300,13 +291,13 @@ img{max-width:100%}[hidden]{display:none!important}
     <div>
       <p class="kicker">🏆 MICROBE MADNESS 2.0</p>
       <h2>Who starved Rezi best?</h2>
-      <p class="sub" id="boardsub">Score = how far you starved Rezi + a streak bonus</p>
+      <p class="sub" id="boardsub"></p>
     </div>
     <div class="rows" id="boardrows"><p class="empty">No players yet. Be the first.</p></div>
     <div class="actions"><button class="bigbtn" id="boardplay" type="button">PLAY ▶</button><button class="ghost" id="boardback" type="button">BACK</button></div>
   </section>
 
-  <div id="boss" hidden><canvas id="cvb" width="640" height="640"></canvas><div class="shout" id="shout">I DON'T FIT IN YOUR POCKET ANYMORE</div></div>
+  <div id="boss" hidden><canvas id="cvb" width="640" height="640"></canvas><div class="shout" id="shout">TOO BIG FOR YOUR POCKET</div></div>
   <p class="footnote">ART FOR HEALTH INITIATIVE · MICROBE MADNESS 2.0 · 18 NOV 2026 · LEKKI · #MicrobeMadness #OneActionForOurFuture</p>
 </div>
 
@@ -324,104 +315,104 @@ const SPACES=[
 // d: how much Rezi gains. negative = Rezi starves. 'w' = why.
 const Q=[
  // HOME
- {s:'house',set:'Sunday evening, living room',p:'You have had a cold for three days. Mum brings last year\'s Augmentin from the drawer: "take it, it works fast."',c:[
-  {t:'Take it and start today',d:18,w:'A cold is almost always a virus. Antibiotics do nothing to viruses. The only one eating here is Rezi.'},
-  {t:'Rest, fluids, steam. See a pharmacist or health centre if the fever is high or it lasts over a week',d:-15,w:'Correct. Most colds clear on their own. Rezi goes hungry.'},
-  {t:'Take half a tablet "just in case"',d:10,w:'A half dose is a gym session for Rezi. It trains on light weights and comes back stronger.'}]},
- {s:'house',set:'Compound, night',p:'A neighbour knocks: her child has diarrhoea and she wants to borrow your leftover antibiotics.',c:[
-  {t:'Hand over the tablets, it\'s an emergency',d:18,w:'Wrong drug, wrong dose, wrong person. Sharing antibiotics is a party for Rezi.'},
-  {t:'Say no. Suggest ORS + zinc now, and the health centre if there is blood, fever or the child is weak',d:-15,w:'Correct. Most childhood diarrhoea needs fluids, not antibiotics.'},
-  {t:'Give them, but tell her to buy her own tomorrow',d:12,w:'Still sharing, still the wrong drug. Rezi doesn\'t care who paid.'}]},
- {s:'house',set:'After a party',p:'You ate and drank too much. Uncle says "take antibiotics to flush your system."',c:[
-  {t:'Take two capsules to clear everything out',d:16,w:'Antibiotics also kill the helpful germs in your gut. When the good germs die, Rezi gets more room.'},
-  {t:'Water, rest, light food. Antibiotics are not a detox',d:-15,w:'Correct. Your good germs are your bodyguards. Keep them.'},
-  {t:'Take just one',d:8,w:'One is still food for Rezi and still a loss for your good germs.'}]},
+ {s:'house',set:'Living room',p:'You\'ve had a cold for 3 days. Mum offers last year\'s leftover antibiotics.',c:[
+  {t:'Take them',d:18,w:'Colds are viruses. Antibiotics don\'t touch them.'},
+  {t:'Rest and fluids. Clinic if it gets worse',d:-15,w:'Most colds clear on their own.'},
+  {t:'Take half a tablet, just in case',d:10,w:'Half doses train Rezi to survive.'}]},
+ {s:'house',set:'Night, your door',p:'A neighbour\'s child has diarrhoea. She asks to borrow your antibiotics.',c:[
+  {t:'Give them to her',d:18,w:'Wrong drug, wrong dose, wrong person.'},
+  {t:'Say no. Suggest ORS + zinc and the clinic',d:-15,w:'Fluids treat most childhood diarrhoea.'},
+  {t:'Give them, tell her to buy her own tomorrow',d:12,w:'Still sharing. Rezi doesn\'t care who paid.'}]},
+ {s:'house',set:'After a party',p:'Uncle says: "Take antibiotics to flush your system."',c:[
+  {t:'Take two capsules',d:16,w:'Antibiotics kill your good germs too. Rezi gets room.'},
+  {t:'Water, rest, light food',d:-15,w:'Your good germs are your bodyguards.'},
+  {t:'Take just one',d:8,w:'One is still a meal for Rezi.'}]},
  // PHARMACY
- {s:'chemist',set:'Patent medicine shop',p:'Your child has watery stool. The vendor offers "a strong antibiotic that will stop it at once."',c:[
-  {t:'Buy the strong one',d:18,w:'Most watery diarrhoea is viral or from bad water. Rezi eats; the child doesn\'t improve.'},
-  {t:'Ask for ORS + zinc, and go to the health centre if there is blood, fever or dehydration',d:-15,w:'Correct. ORS + zinc is the real treatment. Rezi stays hungry.'},
-  {t:'Buy the antibiotic AND ORS, cover all bases',d:10,w:'ORS is good. The antibiotic is still an unnecessary meal for Rezi.'}]},
- {s:'chemist',set:'Pharmacy counter',p:'Fever and headache. You ask for "antibiotics and malaria drugs together, to clear everything."',c:[
-  {t:'Take the combo',d:18,w:'No test, no diagnosis, two drugs. Rezi loves guesswork.'},
-  {t:'Ask for a malaria test (RDT) first, then treat what the test shows',d:-15,w:'Correct. Test before you treat. Antibiotics do not work on malaria.'},
-  {t:'Just take the malaria drug, skip the antibiotics',d:2,w:'Better than the combo, but still no test. Confirm first.'}]},
- {s:'chemist',set:'Day 3 of 5',p:'The doctor prescribed 5 days. On day 3 you feel fine, and the tablets cost money.',c:[
-  {t:'Stop now and keep the rest for next time',d:14,w:'Rezi that survives a short course has learned your drug. The leftovers cause trouble later.'},
-  {t:'Take it exactly as prescribed. Ask the pharmacist before changing anything',d:-15,w:'Correct. Follow the plan the clinician gave you, not how you feel on day 3.'},
-  {t:'Take it every other day to stretch it',d:12,w:'A low, patchy dose is a training camp for Rezi.'}]},
+ {s:'chemist',set:'Medicine shop',p:'Your child has watery stool. The vendor offers a "strong antibiotic".',c:[
+  {t:'Buy it',d:18,w:'Most watery stool is viral. Antibiotics won\'t help.'},
+  {t:'Ask for ORS + zinc',d:-15,w:'ORS + zinc is the real treatment.'},
+  {t:'Buy both, to be safe',d:10,w:'The antibiotic is an unnecessary meal.'}]},
+ {s:'chemist',set:'Pharmacy counter',p:'Fever and headache. You ask for malaria drugs and antibiotics together.',c:[
+  {t:'Take the combo',d:18,w:'No test, two drugs. Rezi loves guesswork.'},
+  {t:'Ask for a malaria test first',d:-15,w:'Test before you treat.'},
+  {t:'Take the malaria drug only',d:2,w:'Better, but still untested.'}]},
+ {s:'chemist',set:'Day 3 of 5',p:'The doctor said 5 days. On day 3 you feel fine.',c:[
+  {t:'Stop and save the rest',d:14,w:'Survivors of a short course learn your drug.'},
+  {t:'Finish exactly as prescribed',d:-15,w:'Follow the plan, not the feeling.'},
+  {t:'Take one every other day',d:12,w:'Patchy doses are Rezi\'s training camp.'}]},
  // CLINIC
- {s:'clinic',set:'Hospital ward visit',p:'You have come to see your aunt on the ward. There is sanitiser at the door. You are in a hurry.',c:[
-  {t:'Skip it, shake everyone\'s hand, sit on the bed',d:14,w:'Resistant germs are more common in hospitals than anywhere else. Your hands are their free ride.'},
-  {t:'Sanitise going in and coming out, and don\'t sit on patient beds',d:-15,w:'Correct. Clean hands are the cheapest AMR tool there is.'},
-  {t:'Only wash if your hands touched something dirty',d:4,w:'Germs don\'t announce themselves. Make hand hygiene automatic.'}]},
- {s:'clinic',set:'Dressing room',p:'A small cut on your leg. You ask the nurse for antibiotics "to prevent infection."',c:[
-  {t:'Insist. You know your body',d:14,w:'A clean wound doesn\'t need antibiotics. You\'d be feeding Rezi, not treating the cut.'},
-  {t:'Clean it, cover it, watch for redness or pus. Antibiotics only if a clinician says so',d:-15,w:'Correct. Prevention here is soap, water and a clean dressing.'},
-  {t:'Take the drugs home but only use them if it swells',d:6,w:'Now you have leftover antibiotics at home. See the HOME round.'}]},
- {s:'clinic',set:'Waiting area chat',p:'Uncle says: "Resistance is for weak people. My body is strong, I can\'t get it."',c:[
-  {t:'Nod. Uncle knows',d:10,w:'It is the GERM that becomes resistant, not the person. Anyone can carry resistant Rezi, strong or not.'},
-  {t:'Explain: the germ resists the drug, not your body. Anyone can carry it and pass it on',d:-15,w:'Correct. You just taught the whole waiting room.'},
-  {t:'Say only sick people in hospitals get it',d:8,w:'Resistant germs live at home, on farms, in water and in markets too. See the map.'}]},
+ {s:'clinic',set:'Hospital ward',p:'You\'re visiting your aunt. Sanitiser is at the door. You\'re in a hurry.',c:[
+  {t:'Skip it, shake hands, sit on the bed',d:14,w:'Hospitals carry the most resistant germs.'},
+  {t:'Sanitise in and out, stay off the beds',d:-15,w:'Clean hands beat Rezi cheaply.'},
+  {t:'Only wash if your hands look dirty',d:4,w:'Germs don\'t announce themselves.'}]},
+ {s:'clinic',set:'Dressing room',p:'A small cut on your leg. You ask the nurse for antibiotics "to prevent infection".',c:[
+  {t:'Insist',d:14,w:'A clean wound doesn\'t need antibiotics.'},
+  {t:'Clean it, cover it, watch it',d:-15,w:'Soap, water, a clean dressing.'},
+  {t:'Take them home, just in case',d:6,w:'Now you have leftovers at home.'}]},
+ {s:'clinic',set:'Waiting area',p:'Uncle: "Resistance is for weak people. I\'m strong, I can\'t get it."',c:[
+  {t:'Nod',d:10,w:'Germs become resistant, not people.'},
+  {t:'Explain: the germ resists, not your body',d:-15,w:'Anyone can carry and pass on resistant germs.'},
+  {t:'Say only hospital patients get it',d:8,w:'Rezi lives in homes, farms and water too.'}]},
  // MARKET & FARM
- {s:'market',set:'Chicken seller, market',p:'The seller boasts that her birds got an "antibiotic booster" so they are very healthy.',c:[
-  {t:'Buy, and don\'t bother cooking it through, it\'s already medicated',d:18,w:'Antibiotics in animals breed resistant germs that can stay on the meat. Only proper cooking kills them.'},
-  {t:'Buy, cook it through, wash hands and board after handling raw meat',d:-15,w:'Correct. Thorough cooking and clean hands break the chain.'},
-  {t:'Stop eating chicken forever',d:2,w:'No need. Well-cooked meat is safe. Handling and cooking are what matter.'}]},
- {s:'market',set:'Vegetable stall',p:'The farmer used chicken droppings as manure on the ugwu leaves you are buying.',c:[
-  {t:'Nibble some raw on the way home, it\'s fresh',d:14,w:'Animal waste can carry resistant germs onto soil and leaves. Eating it raw is a direct delivery.'},
-  {t:'Wash well with clean water, cook when you can',d:-15,w:'Correct. Washing and cooking knock Rezi off your plate.'},
-  {t:'Quick rinse with whatever water is nearby',d:6,w:'Dirty water can add germs, not remove them.'}]},
- {s:'market',set:'Friend\'s compound',p:'You pet the goat and play with the dog. The suya arrives. Your hands are ready.',c:[
-  {t:'Eat with your hands, it\'s just a goat',d:14,w:'Resistant germs move between animals and people. Pets and petting zoos included.'},
-  {t:'Wash hands with soap after the animals, before the food',d:-15,w:'Correct. Animals to hands to mouth is Rezi\'s road. You blocked it.'},
-  {t:'Wipe your hands on your trousers, that\'s fine',d:10,w:'Trousers are not soap. Rezi is still on your fingers.'}]},
+ {s:'market',set:'Chicken seller',p:'"My birds got antibiotic booster, very healthy!"',c:[
+  {t:'Buy it, skip cooking it through',d:18,w:'Resistant germs stay on the meat. Heat kills them.'},
+  {t:'Buy it, cook it through, wash hands',d:-15,w:'Cooking and clean hands break the chain.'},
+  {t:'Never eat chicken again',d:2,w:'No need. Well-cooked meat is safe.'}]},
+ {s:'market',set:'Vegetable stall',p:'The ugwu was grown on chicken-droppings manure.',c:[
+  {t:'Nibble some raw now',d:14,w:'Animal waste carries resistant germs onto leaves.'},
+  {t:'Wash well, cook when you can',d:-15,w:'Washing knocks Rezi off your plate.'},
+  {t:'Quick rinse in any water',d:6,w:'Dirty water adds germs.'}]},
+ {s:'market',set:'Friend\'s compound',p:'You petted the goat and the dog. The suya arrives.',c:[
+  {t:'Eat with your hands',d:14,w:'Germs move from animals to hands to mouth.'},
+  {t:'Wash with soap first',d:-15,w:'You blocked Rezi\'s road.'},
+  {t:'Wipe hands on your trousers',d:10,w:'Trousers aren\'t soap.'}]},
  // WATER
- {s:'water',set:'Your street',p:'A septic tank is leaking into the gutter, close to the borehole everyone draws water from.',c:[
-  {t:'Ignore it, it\'s not your tank',d:14,w:'Untreated sewage carries antibiotics and resistant germs into the water everyone drinks.'},
-  {t:'Report it to the landlord / local government. Boil or treat drinking water until it\'s fixed',d:-15,w:'Correct. Water is where resistance travels quietly. You stopped it.'},
-  {t:'Just avoid that side of the street',d:6,w:'The borehole can\'t avoid it. Report it.'}]},
- {s:'water',set:'Kitchen drawer',p:'You find expired antibiotics. How do you get rid of them?',c:[
-  {t:'Flush them down the toilet or the gutter',d:14,w:'Antibiotics in water train Rezi for the whole community.'},
-  {t:'Return them to a pharmacy take-back, or seal them in the bin as local guidance says. Never the gutter',d:-15,w:'Correct. Keep drugs out of water and soil.'},
-  {t:'Give them to someone who might need them',d:18,w:'Expired, unprescribed and shared. Three mistakes in one move.'}]},
- {s:'water',set:'Stream near a farm',p:'Hot afternoon. The stream looks clean. Farm runoff enters it upstream.',c:[
-  {t:'Drink from it, it\'s clear',d:18,w:'Resistant germs and drug residue from farms and factories flow into rivers. Clear is not clean.'},
-  {t:'Don\'t drink untreated water. Use boiled or treated water, and cover any cuts',d:-15,w:'Correct. Treated water, every time.'},
-  {t:'Just rinse your mouth, don\'t swallow',d:8,w:'A mouth rinse is still an entry point.'}]},
+ {s:'water',set:'Your street',p:'A septic tank leaks into the gutter near the borehole.',c:[
+  {t:'Ignore it',d:14,w:'Sewage carries resistant germs into drinking water.'},
+  {t:'Report it. Boil water until it\'s fixed',d:-15,w:'Water is where resistance travels quietly.'},
+  {t:'Avoid that side of the street',d:6,w:'The borehole can\'t avoid it.'}]},
+ {s:'water',set:'Kitchen drawer',p:'You find expired antibiotics.',c:[
+  {t:'Flush them',d:14,w:'Antibiotics in water train Rezi for everyone.'},
+  {t:'Return them to a pharmacy',d:-15,w:'Keep drugs out of water and soil.'},
+  {t:'Give them to someone who needs them',d:18,w:'Expired, unprescribed and shared.'}]},
+ {s:'water',set:'Stream near a farm',p:'Hot day. The stream looks clean. Farm runoff enters upstream.',c:[
+  {t:'Drink from it',d:18,w:'Clear is not clean.'},
+  {t:'Boiled or treated water only',d:-15,w:'Treated water, every time.'},
+  {t:'Rinse your mouth, don\'t swallow',d:8,w:'Still an entry point.'}]},
  // TRAVEL
- {s:'travel',set:'Back from a trip',p:'You just got back from travelling with an upset stomach. A friend says "take the Cipro I brought from abroad."',c:[
-  {t:'Take it right away',d:18,w:'Travellers carry resistant germs home. Random imported antibiotics make it worse.'},
-  {t:'ORS and rest. See a clinic if there is blood, fever or it lasts over two days, and tell them you travelled',d:-15,w:'Correct. Telling the clinician about your travel changes how they treat you.'},
-  {t:'Take an anti-diarrhoea tablet only and carry on',d:6,w:'Better than Cipro, but with blood or fever, still see a clinic.'}]},
- {s:'travel',set:'Packing',p:'You are packing for a trip. "I should buy some antibiotics to carry along, just in case."',c:[
-  {t:'Buy them, take one at the first sneeze',d:18,w:'A sneeze is a virus. Antibiotics in your luggage end up as self-prescribing.'},
-  {t:'Pack ORS, sanitiser, and check your vaccinations. See a clinician if you fall ill',d:-15,w:'Correct. A travel kit is for prevention, not antibiotics.'},
-  {t:'Carry them but promise not to touch them',d:6,w:'Leftover drugs in your bag are a temptation. Leave them.'}]},
+ {s:'travel',set:'Back from a trip',p:'Upset stomach after travelling. A friend offers Cipro from abroad.',c:[
+  {t:'Take it',d:18,w:'Travellers carry resistant germs home.'},
+  {t:'ORS and rest. Clinic if it lasts',d:-15,w:'Tell the clinic you travelled.'},
+  {t:'Anti-diarrhoea tablet only',d:6,w:'Fine unless there\'s blood or fever.'}]},
+ {s:'travel',set:'Packing',p:'"I\'ll buy antibiotics to carry, just in case."',c:[
+  {t:'Buy them, take one at the first sneeze',d:18,w:'A sneeze is a virus.'},
+  {t:'Pack ORS and sanitiser instead',d:-15,w:'A travel kit prevents; it doesn\'t self-prescribe.'},
+  {t:'Carry them but don\'t touch them',d:6,w:'Leftovers tempt.'}]},
  // STREET & SCHOOL
- {s:'street',set:'Gym',p:'You have a cut on your hand. Your friend offers to share a towel and mat.',c:[
-  {t:'Share, no problem',d:14,w:'Germs spread person to person at the gym, at school and through handshakes. An open cut is an open door.'},
-  {t:'Use your own towel, wipe the equipment, cover the cut',d:-15,w:'Correct. Skin contact and shared gear are Rezi\'s highway. You closed it.'},
-  {t:'Use the towel but skip the mat',d:8,w:'Half caution, half risk.'}]},
- {s:'street',set:'School gate',p:'Your child has a cough. The teacher says keep them home. Mum wants to send them in with leftover amoxicillin "so it doesn\'t spread."',c:[
-  {t:'Send them in with the amoxicillin',d:18,w:'Leftover antibiotics don\'t stop a virus spreading. Rezi eats, and the class is still exposed.'},
-  {t:'Keep them home, fluids, cover coughs. Health centre if breathing is fast or the fever is high',d:-15,w:'Correct. Staying home is what actually protects the class.'},
-  {t:'Send them in with sanitiser only',d:8,w:'Sanitiser helps, but a coughing child in class still spreads germs.'}]},
- {s:'street',set:'Bus stop',p:'Someone sneezes, everyone shakes hands, and you are about to eat roasted plantain with those hands.',c:[
-  {t:'Eat. This is Lagos',d:12,w:'Hand to mouth after a round of handshakes is how germs move through a community.'},
-  {t:'Wash or sanitise before you eat',d:-15,w:'Correct. Twenty seconds beats Rezi every time.'},
-  {t:'Eat with the other hand',d:8,w:'Rezi doesn\'t check which hand.'}]}
+ {s:'street',set:'Gym',p:'You have a cut on your hand. A friend offers to share a towel and mat.',c:[
+  {t:'Share',d:14,w:'An open cut is an open door.'},
+  {t:'Own towel, cover the cut',d:-15,w:'You closed Rezi\'s highway.'},
+  {t:'Towel yes, mat no',d:8,w:'Half caution.'}]},
+ {s:'street',set:'School gate',p:'Your child has a cough. Mum wants to send them in with leftover amoxicillin.',c:[
+  {t:'Send them with the amoxicillin',d:18,w:'Leftover antibiotics don\'t stop a virus.'},
+  {t:'Keep them home, fluids, cover coughs',d:-15,w:'Staying home protects the class.'},
+  {t:'Send them with sanitiser only',d:8,w:'A coughing child still spreads germs.'}]},
+ {s:'street',set:'Bus stop',p:'Handshakes all round, then roasted plantain with those hands.',c:[
+  {t:'Eat',d:12,w:'Hand to mouth is how germs travel.'},
+  {t:'Wash or sanitise first',d:-15,w:'Twenty seconds beats Rezi.'},
+  {t:'Use the other hand',d:8,w:'Rezi doesn\'t check which hand.'}]}
 ];
 const TRICKS=[
- ['Pump it out','Rezi grows pumps that push the drug straight back out.','Like bailing water out of a canoe faster than it comes in.'],
- ['Break the drug','He makes enzymes that chop the antibiotic to pieces.','Like scissors cutting up a letter before anyone reads it.'],
- ['Lock the door','He changes or shrinks his entry points so the drug can\'t get in.','Like a house that bricked up most of its windows.'],
- ['Change the lock','He reshapes the part the drug grabs, so the key no longer fits.','You changed the lock; the old key is useless.'],
- ['Send decoys','He makes far more targets than the drug can bind.','Like hiding one real exam paper in a pile of fakes.'],
- ['Share the answers','He hands his trick directly to nearby germs, even other species.','Passing exam answers around the room, so everyone passes.']
+ ['Pumps the drug out','Like bailing water out of a canoe.'],
+ ['Breaks the drug','Scissors cutting up the letter.'],
+ ['Locks the door','Bricked-up windows.'],
+ ['Changes the lock','Your old key no longer fits.'],
+ ['Sends decoys','One real target in a pile of fakes.'],
+ ['Shares the answers','Passes the trick to germs next door.']
 ];
 const STRAINS=[['Crimson','#F5054E'],['Toxic','#9bf500'],['Violet','#b36bff'],['Cyber','#19e6ff'],['Inferno','#ff7a1a'],['Acid','#f2ff2e']];
-const PLEDGES=['No antibiotics without a test or a clinician','Finish the course exactly as prescribed','I won\'t share or borrow antibiotics','Wash hands before food and after animals','Expired drugs go back to the pharmacy, not the gutter','ORS + zinc first for diarrhoea','Cook meat through, wash vegetables well','I\'ll correct one uncle this month'];
-const STAGES=[[10,'STARVED','shrunk to nothing 😵'],[30,'SPORE','small… hungry… weak'],[55,'REZI','still here 😏'],[80,'BUFFED','eating well 💪'],[101,'BOSS','I RUN THIS NOW 👑']];
+const PLEDGES=['No antibiotics without a test','Finish the course as prescribed','Never share or borrow antibiotics','Wash hands before food, after animals','Expired drugs back to the pharmacy','ORS + zinc first for diarrhoea','Cook meat through, wash veg','Correct one uncle this month'];
+const STAGES=[[10,'STARVED','😵'],[30,'SPORE','so hungry…'],[55,'REZI','still here 😏'],[80,'BUFFED','yum 💪'],[101,'BOSS','I RUN THIS 👑']];
 
 /* ---------- state ---------- */
 const $=id=>document.getElementById(id);
@@ -497,12 +488,12 @@ function render(){
   $('where').innerHTML=`${r.space.ic} ${r.space.n} <span>· ${r.q.set}</span>`;
   $('prompt').textContent=r.q.p;
   $('choices').innerHTML=r.q.c.map((c,i)=>`<button type="button" class="choice" data-i="${i}"><kbd>${i+1}</kbd><span>${c.t}</span></button>`).join('');
-  $('why').hidden=true;$('next').hidden=true;$('origin').hidden=true;
+  $('why').hidden=true;$('next').hidden=true;
   updateDevice($('cv'),$('fill'),$('pwr'),$('stage'),$('quip'));
-  $('quip').textContent=pick(['Feed me a little, please 🙏','What will you choose? 👀','I\'m watching you…','Go on, make a mistake 😈','No pressure, I\'m just starving']);
+  $('quip').textContent=pick(['Feed me 🙏','Choose… 👀','Make a mistake 😈','So hungry']);
 }
 function updateDevice(cv,fill,pwr,stageEl,quipEl){const s=stageOf(state.p);setRezi(cv,state.p);fill.style.width=state.p+'%';pwr.textContent=state.p;stageEl.textContent=s[1];if(quipEl)quipEl.textContent=s[2];
-  const glass=cv.closest('.glass');const idx=STAGES.indexOf(s);glass.classList.toggle('over',idx>=3);glass.classList.toggle('cracked',idx>=4)}
+  const glass=cv.closest('.glass');glass.style.setProperty('--grow',(1+Math.max(0,state.p-50)/90).toFixed(2));glass.classList.toggle('over',state.p>55);glass.classList.toggle('cracked',false)}
 let bossShown=false,bossTimer;
 function bossBurst(){
   if(bossShown)return;bossShown=true;
@@ -521,12 +512,11 @@ function choose(i){
   sfx[kind]();
   document.querySelectorAll('.choice').forEach((b,j)=>{b.disabled=true;const k=r.q.c[j];b.classList.add(k.d<0?'good':k.d>=12?'bad':'mid');if(j===i)b.classList.add('picked')});
   $('why').className='why '+kind;$('why').hidden=false;
-  $('whytag').textContent=kind==='good'?`REZI STARVES −${Math.abs(c.d)} PWR`:`REZI FEEDS +${c.d} PWR`;
+  $('whytag').textContent=kind==='good'?`−${Math.abs(c.d)}`:`+${c.d}`;
   $('whytext').textContent=c.w;
   updateDevice($('cv'),$('fill'),$('pwr'),$('stage'),$('quip'));
-  if(STAGES.indexOf(stageOf(state.p))===4)bossBurst();else bossShown=false;
-  if(kind!=='good'&&!state.originShown){state.originShown=true;$('origin').hidden=false}
-  $('quip').textContent=kind==='good'?pick(['Ugh! I\'m starving 😩','Who sent you? 😭','That wasn\'t tasty at all…']):pick(['Yum yum! 😋','You like me too much 😈','More, more, more!']);
+  if(state.i===6&&kind!=='good'&&state.p>55){document.querySelector('#s-play .glass').classList.add('cracked');bossBurst()}
+    $('quip').textContent=kind==='good'?pick(['Ugh 😩','Not fair 😭','Hungry…']):pick(['Yum 😋','More! 😈','Thank you 👑']);
   $('next').hidden=false;$('next').textContent=state.i===6?'SEE RESULT ▶':'NEXT SPACE ▶';$('next').focus();
   $('map').children[state.i].className=r.res;
 }
@@ -537,10 +527,10 @@ function result(){
   const won=state.p<=30;
   updateDevice($('cv2'),$('fill2'),$('pwr2'),$('stage2'),$('quip2'));
   $('verdict').className=won?'':'lost';
-  $('verdict').textContent=state.p<=10?'REZI IS COMPLETELY STARVED':won?'REZI IS HUNGRY. GOOD.':state.p<=55?'REZI IS STILL AROUND. HMM.':state.p<=80?'YOU FED REZI VERY WELL':'REZI IS THE BOSS NOW 👑';
-  $('sum').textContent=won?`Across ${state.good} of 7 spaces you gave Rezi nothing to eat. That is how resistance dies: one correct move at a time, everywhere it hides.`:`Rezi fed in ${state.bad} space${state.bad>1?'s':''}. Every one of them happens in real life, and every one can be reversed. Play again and see where it catches you.`;
+  $('verdict').textContent=state.p<=10?'REZI STARVED':won?'REZI STAYED SMALL':state.p<=55?'REZI SURVIVED':state.p<=80?'YOU FED REZI':'REZI TOOK OVER 👑';
+  $('sum').textContent=won?`${state.good} of 7 smart moves. That\'s how resistance dies.`:`Rezi fed ${state.bad} time${state.bad>1?'s':''}. Every one can be reversed.`;
   $('k-score').textContent=score();$('k-good').textContent=state.good;$('k-bad').textContent=state.bad;$('k-streak').textContent=state.best;
-  $('tricks').innerHTML=TRICKS.map(([a,b,c])=>`<li><b>${a}</b>${b}<i>${c}</i></li>`).join('');
+  $('tricks').innerHTML=TRICKS.map(([a,b])=>`<li><b>${a}</b>${b}</li>`).join('');
   $('pills').innerHTML=PLEDGES.map(p=>`<button type="button" class="pill" aria-pressed="false">${p}</button>`).join('');
   $('card').hidden=true;$('copy').hidden=true;$('toast').textContent='';$('pname').value='';$('pledgebox').hidden=false;$('minibox').hidden=true;myEntryId=null;
   if(won){tally.wins++;saveTally();showTally();sfx.win()}else sfx.lose();
@@ -549,7 +539,7 @@ $('pills').onclick=e=>{const b=e.target.closest('.pill');if(!b)return;sfx.tap();
 let cardText='';
 $('seal').onclick=()=>{
   const picked=[...document.querySelectorAll('.pill[aria-pressed="true"]')].map(b=>b.textContent);
-  if(!picked.length){$('toast').textContent='PICK AT LEAST ONE ACTION';return}
+  if(!picked.length){$('toast').textContent='PICK ONE';return}
   const name=$('pname').value.trim()||'A Microbe Madness guest';
   $('card').innerHTML=`<div class="cn">REZI</div><div class="ct">ONE ACTION PLEDGE · SCORE ${score()} · REZI PWR ${state.p} · ${stageOf(state.p)[1]}</div><div><b>${name}</b> promises:</div><ul>${picked.map(p=>`<li>${p}</li>`).join('')}</ul><div class="foot">ART FOR HEALTH INITIATIVE · MICROBE MADNESS 2.0 · #MicrobeMadness #OneActionForOurFuture</div>`;
   cardText=`🦠 REZI — I scored ${score()} and starved Rezi the superbug down to PWR ${state.p} (${stageOf(state.p)[1]}) at Microbe Madness 2.0!\n\nMy One Action:\n${picked.map(p=>'• '+p).join('\n')}\n\n#MicrobeMadness #OneActionForOurFuture @artforhealthinitiative`;
@@ -570,7 +560,7 @@ function rowHTML(e,i,mine){return `<div class="row ${i===0?'top':''} ${mine?'me'
 function renderBoard(){
   const list=sortEntries(entries);
   $('boardrows').innerHTML=list.length?list.slice(0,20).map((e,i)=>rowHTML(e,i,e.id===myEntryId)).join(''):'<p class="empty">No players yet. Be the first.</p>';
-  $('boardsub').textContent=`${list.length} player${list.length===1?'':'s'} · Score = how far you starved Rezi + 10 per streak move${useDb?'':' · offline: this screen only'}`;
+  $('boardsub').textContent=`${list.length} player${list.length===1?'':'s'}${useDb?'':' · offline: this screen only'}`;
   if(myEntryId){const idx=list.findIndex(e=>e.id===myEntryId);const around=list.slice(Math.max(0,idx-2),idx+3);
     $('minititle').textContent=idx>=0?`YOU ARE #${idx+1} OF ${list.length}`:'LEADERBOARD';
     $('minirows').innerHTML=around.map(e=>rowHTML(e,list.indexOf(e),e.id===myEntryId)).join('');$('minibox').hidden=false}
