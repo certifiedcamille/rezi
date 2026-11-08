@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="REZI: Pocket Superbug — Art for Health Initiative's AMR behaviour-change game for Microbe Madness 2.0.">
+<meta property="og:title" content="REZI: Pocket Superbug">
+<meta property="og:description" content="Starve the superbug across 7 spaces. Seal your One Action. Climb the board.">
+<meta name="theme-color" content="#0b0a10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='34' r='24' fill='%23F5054E'/%3E%3Ccircle cx='24' cy='30' r='4'/%3E%3Ccircle cx='40' cy='30' r='4'/%3E%3C/svg%3E">
+<title>REZI: Pocket Superbug</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Press+Start+2P&family=Archivo:wght@400;600;800&display=swap">
+<style>
+/* Layout: one-screen arcade cabinet. Left = the capsule device holding Rezi; right = the scenario panel. Top = the 7 "spaces" map. Big type for a projector; stacks on phones. Single dark arcade theme by choice. */
+:root{
+  --bg:#0b0a10;        /* cabinet black, slight violet bias */
+  --panel:#15131d;
+  --panel-2:#1e1b2a;
+  --fg:#f3eef2;
+  --muted:#a69fb0;
+  --red:#F5054E;       /* AFHI red */
+  --red-deep:#9c0333;
+  --lime:#9bf500;      /* "starved" success */
+  --amber:#ffb020;
+  --glass:#0d1a14;     /* device screen */
+  --glass-ink:#c8ffd0;
+  --display:'Bungee',Impact,'Arial Black',sans-serif;
+  --pixel:'Press Start 2P',monospace;
+  --body:'Archivo','Helvetica Neue',Arial,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:clamp(16px,1.3vw,22px);line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0;
+  background-image:radial-gradient(circle at 20% 0%,rgba(245,5,78,.14),transparent 45%),radial-gradient(circle at 90% 100%,rgba(155,245,0,.08),transparent 40%);}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+.app{max-width:1500px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;gap:1rem;padding-block:1rem}
+.screen[hidden]{display:none!important}
+
+/* top bar */
+.bar{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.brand{font-family:var(--pixel);font-size:.7em;letter-spacing:.04em;color:var(--muted);display:flex;gap:.8em;align-items:center}
+.brand b{color:var(--red)}
+.tally{font-family:var(--pixel);font-size:.6em;color:var(--muted);display:flex;gap:1.4em}
+.tally span{color:var(--lime)}
+.soundbtn{background:var(--panel);border:2px solid #2a2638;border-radius:999px;padding:.4em .9em;font-family:var(--pixel);font-size:.55em}
+
+/* attract */
+.attract{flex:1;display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;align-items:center}
+.attract h1{font-family:var(--display);font-size:clamp(3rem,9vw,8.5rem);line-height:.9;margin:0;color:var(--red);text-wrap:balance;text-shadow:0 .06em 0 var(--red-deep)}
+.attract h1 small{display:block;font-size:.28em;color:var(--fg);margin-top:.3em;letter-spacing:.02em}
+.kicker{font-family:var(--pixel);font-size:.75em;color:var(--lime);margin:0 0 .8em}
+.lede{max-width:34ch;color:var(--muted);font-size:1.1em;margin:.6em 0 1.4em}
+.lede b{color:var(--fg)}
+.bigbtn{background:var(--red);border:0;border-radius:.6em;padding:.9em 1.6em;font-family:var(--display);font-size:1.5em;color:#fff;box-shadow:0 .35em 0 var(--red-deep);transition:transform .08s}
+.bigbtn:active{transform:translateY(.25em);box-shadow:0 .1em 0 var(--red-deep)}
+.blink{animation:blink 1.2s steps(2,end) infinite}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.blink{animation:none}}
+.spaces-legend{display:flex;flex-wrap:wrap;gap:.5em;margin-top:1.4em}
+.spaces-legend span{font-family:var(--pixel);font-size:.55em;border:1px solid #352f47;border-radius:999px;padding:.6em .9em;color:var(--muted)}
+
+/* device */
+.device{background:linear-gradient(180deg,#2a2638,#15131d);border:4px solid #3b3450;border-radius:3em/50%;padding:1.2em;position:relative;box-shadow:inset 0 0 0 3px #0b0a10,0 20px 60px rgba(0,0,0,.6)}
+.device::before{content:"";position:absolute;inset:50% 8% auto;height:3px;background:var(--red);opacity:.6}
+.device-top{background:var(--red);border-radius:2.4em 2.4em .4em .4em;padding:.5em 1.2em .6em;font-family:var(--pixel);font-size:.6em;display:flex;justify-content:space-between;color:#fff}
+.glass{background:var(--glass);border-radius:.6em;margin:.6em 0;aspect-ratio:1/1;max-width:100%;position:relative;overflow:hidden;box-shadow:inset 0 0 0 6px #06100a,inset 0 0 40px rgba(0,0,0,.8)}
+.glass canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+.glass .lbl{position:absolute;left:.9em;top:.8em;font-family:var(--pixel);font-size:.6em;color:var(--glass-ink);opacity:.8}
+.glass .stage{position:absolute;right:.9em;top:.8em;font-family:var(--pixel);font-size:.6em;color:var(--lime)}
+.glass .quip{position:absolute;left:.9em;right:.9em;bottom:.8em;font-family:var(--pixel);font-size:.55em;line-height:1.6;color:var(--glass-ink);background:rgba(0,0,0,.45);padding:.6em;border-radius:.4em}
+.meter{display:flex;align-items:center;gap:.8em;font-family:var(--pixel);font-size:.6em;color:var(--muted)}
+.meter .track{flex:1;height:1.2em;background:#0b0a10;border-radius:999px;overflow:hidden;border:2px solid #2a2638}
+.meter .fill{height:100%;width:50%;background:linear-gradient(90deg,var(--lime),var(--amber) 55%,var(--red));transition:width .5s}
+.meter output{color:var(--fg);min-width:3ch;text-align:right;font-variant-numeric:tabular-nums}
+.device-btns{display:flex;justify-content:center;gap:1.2em;margin-top:.9em}
+.device-btns i{width:2.2em;height:2.2em;border-radius:50%;background:#3b3450;display:block;box-shadow:0 .2em 0 #0b0a10}
+.device-btns i:nth-child(2){background:var(--red)}
+
+/* strain picker */
+.strains{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.9em;margin:1em 0}
+.strain{background:var(--panel);border:3px solid #2a2638;border-radius:.8em;padding:1em .6em;text-align:center;font-family:var(--pixel);font-size:.6em;display:grid;gap:.8em;justify-items:center}
+.strain i{width:3.2em;height:3.2em;border-radius:40% 60% 55% 45%;display:block;box-shadow:0 0 18px currentColor}
+.strain[aria-pressed="true"]{border-color:var(--lime)}
+
+/* play */
+.map{display:grid;grid-template-columns:repeat(7,1fr);gap:.4em}
+.map div{font-family:var(--pixel);font-size:.5em;text-align:center;padding:.9em .3em;border-radius:.5em;background:var(--panel);border:2px solid #2a2638;color:var(--muted);display:grid;gap:.6em;justify-items:center}
+.map div em{font-style:normal;font-size:1.7em;line-height:1}
+.map div.now{border-color:var(--red);color:var(--fg);background:var(--panel-2)}
+.map div.good{border-color:var(--lime)}
+.map div.bad{border-color:var(--red);background:var(--red-deep);color:#fff}
+.play{display:grid;grid-template-columns:minmax(260px,.75fr) 1.25fr;gap:1.6rem;align-items:start;flex:1}
+.scene{background:var(--panel);border-radius:1em;padding:1.4em 1.6em;display:grid;gap:1em;min-width:0}
+.where{font-family:var(--pixel);font-size:.6em;color:var(--red);display:flex;gap:1em;align-items:center}
+.where span{color:var(--muted)}
+.prompt{font-size:clamp(1.15em,2.1vw,1.7em);font-weight:600;line-height:1.3;margin:0;text-wrap:balance;max-width:40ch}
+.choices{display:grid;gap:.7em}
+.choice{display:grid;grid-template-columns:2.2em 1fr;gap:1em;align-items:center;text-align:left;background:var(--panel-2);border:3px solid #2a2638;border-radius:.7em;padding:.9em 1em;font-size:1.05em;font-weight:600;line-height:1.3;transition:border-color .1s,transform .08s}
+.choice:hover{border-color:var(--red)}
+.choice kbd{font-family:var(--pixel);font-size:.7em;background:var(--bg);border-radius:.4em;padding:.6em 0;text-align:center;color:var(--muted)}
+.choice.good{border-color:var(--lime)}
+.choice.bad{border-color:var(--red);background:var(--red-deep)}
+.choice.mid{border-color:var(--amber)}
+.choice[disabled]{cursor:default;opacity:.7}
+.choice.picked[disabled]{opacity:1}
+.why{background:var(--bg);border-left:6px solid var(--lime);padding:.9em 1.1em;border-radius:.4em;display:grid;gap:.5em}
+.why.bad{border-color:var(--red)}
+.why.mid{border-color:var(--amber)}
+.why .tag{font-family:var(--pixel);font-size:.55em;color:var(--muted)}
+.why p{margin:0}
+.next{justify-self:end;background:var(--fg);color:var(--bg);border:0;border-radius:.6em;padding:.7em 1.4em;font-family:var(--display);font-size:1.05em}
+
+/* result */
+.result{flex:1;display:grid;grid-template-columns:minmax(260px,.75fr) 1.25fr;gap:1.6rem;align-items:start}
+.verdict h2{font-family:var(--display);font-size:clamp(2rem,5.5vw,4.5rem);line-height:.95;margin:0;color:var(--lime);text-wrap:balance}
+.verdict h2.lost{color:var(--red)}
+.verdict p.sum{font-size:1.15em;color:var(--muted);max-width:44ch}
+.stats{display:flex;gap:1.5em;flex-wrap:wrap;font-family:var(--pixel);font-size:.6em;color:var(--muted)}
+.stats b{display:block;font-size:2.2em;color:var(--fg);font-family:var(--display);font-variant-numeric:tabular-nums}
+.tricks{background:var(--panel);border-radius:1em;padding:1.2em 1.4em;display:grid;gap:.7em}
+.tricks h3{margin:0;font-family:var(--pixel);font-size:.65em;color:var(--red)}
+.tricks ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.6em}
+.tricks li{background:var(--panel-2);border-radius:.6em;padding:.8em 1em;font-size:.9em}
+.tricks li b{display:block;color:var(--lime);margin-bottom:.2em}
+.pledge{background:var(--panel);border-radius:1em;padding:1.2em 1.4em;display:grid;gap:.9em}
+.pledge h3{margin:0;font-family:var(--pixel);font-size:.65em;color:var(--lime)}
+.pills{display:flex;flex-wrap:wrap;gap:.5em}
+.pill{background:var(--panel-2);border:2px solid #2a2638;border-radius:999px;padding:.55em 1em;font-weight:600;font-size:.95em}
+.pill[aria-pressed="true"]{border-color:var(--lime);background:#1b2a0c}
+.namerow{display:flex;gap:.6em;flex-wrap:wrap}
+.namerow input{flex:1;min-width:0;background:var(--bg);border:2px solid #2a2638;border-radius:.6em;padding:.7em 1em;color:var(--fg);font:inherit}
+.actions{display:flex;gap:.7em;flex-wrap:wrap;align-items:center}
+.ghost{background:transparent;border:3px solid #2a2638;border-radius:.6em;padding:.7em 1.3em;font-family:var(--display);font-size:1em}
+.card{background:#fff;color:#111;border-radius:.8em;padding:1.2em 1.4em;display:grid;gap:.4em;border-top:14px solid var(--red)}
+.card .cn{font-family:var(--display);font-size:1.6em;color:var(--red);line-height:1}
+.card .ct{font-family:var(--pixel);font-size:.55em;color:#555}
+.card ul{margin:.4em 0;padding-left:1.2em}
+.card .foot{font-family:var(--pixel);font-size:.5em;color:#555;margin-top:.4em}
+.toast{font-family:var(--pixel);font-size:.55em;color:var(--lime)}
+.footnote{font-size:.8em;color:var(--muted);text-align:center;font-family:var(--pixel);letter-spacing:.02em}
+
+/* leaderboard */
+.board{flex:1;display:grid;gap:1rem}
+.board h2{font-family:var(--display);font-size:clamp(2rem,5vw,3.6rem);margin:0;color:var(--amber);text-wrap:balance}
+.board .sub{color:var(--muted);margin:0;font-family:var(--pixel);font-size:.6em}
+.rows{display:grid;gap:.5em}
+.row{display:grid;grid-template-columns:3em 1fr auto;gap:1em;align-items:center;background:var(--panel);border:2px solid #2a2638;border-radius:.7em;padding:.8em 1.1em;min-width:0}
+.row.top{border-color:var(--amber);background:var(--panel-2)}
+.row.me{border-color:var(--lime)}
+.row .rk{font-family:var(--display);font-size:1.5em;color:var(--amber);text-align:center}
+.row .nm{font-weight:800;font-size:1.1em;min-width:0}
+.row .pl{color:var(--muted);font-size:.9em;margin-top:.15em}
+.row .sc{font-family:var(--display);font-size:1.6em;color:var(--lime);font-variant-numeric:tabular-nums;text-align:right}
+.row .sc small{display:block;font-family:var(--pixel);font-size:.35em;color:var(--muted);margin-top:.3em}
+.mini{display:grid;gap:.4em}
+.mini .row{padding:.55em .9em}
+.mini .row .sc{font-size:1.2em}
+.empty{color:var(--muted);font-family:var(--pixel);font-size:.6em;line-height:1.8}
+
+/* pop-out Rezi */
+.glass.over{overflow:visible;z-index:3}
+.glass.over canvas{transform:scale(1.28);transform-origin:50% 55%;transition:transform .5s cubic-bezier(.2,1.4,.4,1)}
+.glass.cracked::after{content:"";position:absolute;inset:0;pointer-events:none;background:
+  linear-gradient(115deg,transparent 48%,rgba(255,255,255,.55) 49%,transparent 50.5%),
+  linear-gradient(35deg,transparent 60%,rgba(255,255,255,.4) 61%,transparent 62%),
+  linear-gradient(160deg,transparent 30%,rgba(255,255,255,.35) 31%,transparent 32%);}
+#boss{position:fixed;inset:0;pointer-events:none;z-index:50;display:grid;place-items:center;overflow:hidden}
+#boss[hidden]{display:none!important}
+#boss canvas{width:min(92vw,92vh);height:min(92vw,92vh);animation:burst .7s cubic-bezier(.2,1.3,.4,1) both;filter:drop-shadow(0 0 40px rgba(245,5,78,.6))}
+#boss .shout{position:absolute;bottom:8%;font-family:var(--display);font-size:clamp(1.6rem,6vw,4.5rem);color:#fff;text-shadow:0 .08em 0 var(--red-deep),0 0 30px var(--red);text-align:center;padding:0 1em}
+@keyframes burst{0%{transform:scale(.2) rotate(-8deg);opacity:0}60%{opacity:1}100%{transform:scale(1) rotate(0)}}
+.shake{animation:shake .5s linear}
+@keyframes shake{10%,90%{transform:translate(-2px,1px)}20%,80%{transform:translate(4px,-2px)}30%,70%{transform:translate(-6px,2px)}40%,60%{transform:translate(6px,-1px)}50%{transform:translate(-4px,3px)}}
+@media (prefers-reduced-motion:reduce){#boss canvas,.shake{animation:none}.glass.over canvas{transition:none}}
+/* origin strip */
+.origin{background:var(--bg);border:3px solid var(--red);border-radius:.8em;padding:1em 1.1em;display:grid;gap:.9em}
+.origin h4{margin:0;font-family:var(--pixel);font-size:.6em;color:var(--red)}
+.origin ol{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6em;counter-reset:st}
+.origin li{background:var(--panel-2);border-radius:.6em;padding:.7em .8em;font-size:.88em;line-height:1.3;display:grid;gap:.4em;counter-increment:st}
+.origin li::before{content:counter(st);font-family:var(--display);color:var(--amber);font-size:1.3em}
+.origin li em{font-style:normal;font-size:1.6em;line-height:1}
+.origin .big{font-family:var(--display);font-size:1.15em;color:var(--lime);margin:0;text-wrap:balance}
+.tricks li i{display:block;font-style:normal;color:var(--muted);font-size:.9em;margin-top:.25em}
+.truth{font-family:var(--display);font-size:clamp(1.3rem,3vw,2.2rem);color:var(--fg);margin:0;text-wrap:balance;line-height:1.05}
+.truth b{color:var(--red)}
+
+@media (max-width:900px){
+  .attract,.play,.result{grid-template-columns:1fr}
+  .map{grid-template-columns:repeat(4,1fr)}
+  .device{max-width:420px;margin:0 auto;width:100%}
+}
+img{max-width:100%}[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="bar">
+    <div class="brand"><b>AFHI</b> · REZI: POCKET SUPERBUG · MICROBE MADNESS 2.0</div>
+    <button class="soundbtn" id="boardbtn" type="button">🏆 LEADERBOARD</button>
+    <div class="tally">PLAYS TODAY <span id="plays">0</span> REZI STARVED <span id="wins">0</span></div>
+    <button class="soundbtn" id="snd" type="button" aria-pressed="true">SOUND ON</button>
+  </div>
+
+  <!-- ATTRACT -->
+  <section class="screen attract" id="s-attract">
+    <div>
+      <p class="kicker">▶ ONE ACTION FOR OUR FUTURE</p>
+      <h1>REZI <small>The superbug is hungry. Keep it that way.</small></h1>
+      <p class="lede">Rezi is a superbug. Every wrong move with antibiotics is a <b>meal</b> for it. Starve it across the <b>7 spaces</b> where it hides: home, pharmacy, clinic, market, water, travel, street.</p>
+      <button class="bigbtn" id="start" type="button">TAP TO PLAY</button>
+      <p class="kicker blink" style="margin-top:1.4em">PRESS 1 · 2 · 3 TO CHOOSE</p>
+      <div class="spaces-legend" id="legend"></div>
+    </div>
+    <div class="device">
+      <div class="device-top"><span>REZI</span><span>● LIVE</span></div>
+      <div class="glass"><canvas id="cv0" width="320" height="320"></canvas><span class="lbl">STRAIN</span><span class="stage" id="st0">REZI</span><div class="quip">So, who's going to feed me? 😈</div></div>
+      <div class="meter">PWR <div class="track"><div class="fill" style="width:50%"></div></div><output>50</output></div>
+      <div class="device-btns"><i></i><i></i><i></i></div>
+    </div>
+  </section>
+
+  <!-- STRAIN -->
+  <section class="screen" id="s-strain" hidden>
+    <p class="kicker">STEP 1 · PICK YOUR STRAIN</p>
+    <h2 style="font-family:var(--display);font-size:clamp(1.8rem,4vw,3rem);margin:.2em 0">Which Rezi do you want to starve?</h2>
+    <div class="strains" id="strains"></div>
+    <div class="actions"><button class="bigbtn" id="go" type="button">START</button><span class="footnote">Colour doesn't change the game. It's just style.</span></div>
+  </section>
+
+  <!-- PLAY -->
+  <section class="screen" id="s-play" hidden>
+    <div class="map" id="map"></div>
+    <div class="play">
+      <div class="device">
+        <div class="device-top"><span>REZI</span><span id="roundlbl">1/7</span></div>
+        <div class="glass"><canvas id="cv" width="320" height="320"></canvas><span class="lbl">PWR</span><span class="stage" id="stage">REZI</span><div class="quip" id="quip">…</div></div>
+        <div class="meter">PWR <div class="track"><div class="fill" id="fill"></div></div><output id="pwr">50</output></div>
+        <div class="device-btns"><i></i><i></i><i></i></div>
+      </div>
+      <div class="scene">
+        <div class="where" id="where"></div>
+        <p class="prompt" id="prompt"></p>
+        <div class="choices" id="choices"></div>
+        <div class="why" id="why" hidden><span class="tag" id="whytag"></span><p id="whytext"></p></div>
+        <div class="origin" id="origin" hidden>
+          <h4>HOW REZI JUST GOT STRONGER</h4>
+          <ol>
+            <li><em>🦠🦠🦠</em>Germs are everywhere. Most are harmless, some even help you.</li>
+            <li><em>💊</em>The antibiotic kills the weak ones. Rezi has a trick, so he survives.</li>
+            <li><em>🦠➡️🦠</em>Rezi multiplies and passes his trick to the germs next to him.</li>
+            <li><em>🛡️❌</em>Your helpful germs were killed too, so Rezi has the whole field.</li>
+            <li><em>🏠💊🏥🐓💧✈️🏫</em>Rezi hops to the next space, in you, on your hands, in water.</li>
+          </ol>
+          <p class="big">People don't become resistant. Germs do. Every needless dose picks the winners.</p>
+        </div>
+        <button class="next" id="next" type="button" hidden>NEXT SPACE ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="s-result" hidden>
+    <div class="result">
+      <div class="device">
+        <div class="device-top"><span>REZI</span><span>FINAL</span></div>
+        <div class="glass"><canvas id="cv2" width="320" height="320"></canvas><span class="lbl">PWR</span><span class="stage" id="stage2"></span><div class="quip" id="quip2"></div></div>
+        <div class="meter">PWR <div class="track"><div class="fill" id="fill2"></div></div><output id="pwr2"></output></div>
+        <div class="device-btns"><i></i><i></i><i></i></div>
+      </div>
+      <div style="display:grid;gap:1.2rem;min-width:0">
+        <div class="verdict">
+          <h2 id="verdict"></h2>
+          <p class="sum" id="sum"></p>
+          <div class="stats"><div>SCORE<b id="k-score"></b></div><div>SMART MOVES<b id="k-good"></b></div><div>REZI FED<b id="k-bad"></b></div><div>BEST STREAK<b id="k-streak"></b></div></div>
+        </div>
+        <p class="truth"><b>People don't become resistant.</b> Germs do. Rezi learned these six tricks:</p>
+        <div class="tricks"><h3>HOW REZI FIGHTS BACK</h3><ul id="tricks"></ul></div>
+        <div class="pledge" id="pledgebox">
+          <h3>SEAL YOUR ONE ACTION</h3>
+          <div class="pills" id="pills"></div>
+          <div class="namerow"><input id="pname" placeholder="Your name or handle (optional)" maxlength="28" autocomplete="off"><button class="bigbtn" id="seal" type="button" style="font-size:1.05em">SEAL PLEDGE</button></div>
+        </div>
+        <div class="card" id="card" hidden></div>
+        <div class="pledge" id="minibox" hidden><h3 id="minititle">LEADERBOARD</h3><div class="mini" id="minirows"></div></div>
+        <div class="actions">
+          <button class="ghost" id="copy" type="button" hidden>COPY FOR WHATSAPP</button>
+          <span class="toast" id="toast"></span>
+          <button class="bigbtn" id="again" type="button">NEXT PLAYER ▶</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEADERBOARD -->
+  <section class="screen board" id="s-board" hidden>
+    <div>
+      <p class="kicker">🏆 MICROBE MADNESS 2.0</p>
+      <h2>Who starved Rezi best?</h2>
+      <p class="sub" id="boardsub">Score = how far you starved Rezi + a streak bonus</p>
+    </div>
+    <div class="rows" id="boardrows"><p class="empty">No players yet. Be the first.</p></div>
+    <div class="actions"><button class="bigbtn" id="boardplay" type="button">PLAY ▶</button><button class="ghost" id="boardback" type="button">BACK</button></div>
+  </section>
+
+  <div id="boss" hidden><canvas id="cvb" width="640" height="640"></canvas><div class="shout" id="shout">I DON'T FIT IN YOUR POCKET ANYMORE</div></div>
+  <p class="footnote">ART FOR HEALTH INITIATIVE · MICROBE MADNESS 2.0 · 18 NOV 2026 · LEKKI · #MicrobeMadness #OneActionForOurFuture</p>
+</div>
+
+<script>
+/* ---------- content ---------- */
+const SPACES=[
+ {id:'house',n:'HOME',ic:'🏠'},
+ {id:'chemist',n:'PHARMACY',ic:'💊'},
+ {id:'clinic',n:'CLINIC',ic:'🏥'},
+ {id:'market',n:'MARKET & FARM',ic:'🐓'},
+ {id:'water',n:'WATER',ic:'💧'},
+ {id:'travel',n:'TRAVEL',ic:'✈️'},
+ {id:'street',n:'STREET & SCHOOL',ic:'🏫'}
+];
+// d: how much Rezi gains. negative = Rezi starves. 'w' = why.
+const Q=[
+ // HOME
+ {s:'house',set:'Sunday evening, living room',p:'You have had a cold for three days. Mum brings last year\'s Augmentin from the drawer: "take it, it works fast."',c:[
+  {t:'Take it and start today',d:18,w:'A cold is almost always a virus. Antibiotics do nothing to viruses. The only one eating here is Rezi.'},
+  {t:'Rest, fluids, steam. See a pharmacist or health centre if the fever is high or it lasts over a week',d:-15,w:'Correct. Most colds clear on their own. Rezi goes hungry.'},
+  {t:'Take half a tablet "just in case"',d:10,w:'A half dose is a gym session for Rezi. It trains on light weights and comes back stronger.'}]},
+ {s:'house',set:'Compound, night',p:'A neighbour knocks: her child has diarrhoea and she wants to borrow your leftover antibiotics.',c:[
+  {t:'Hand over the tablets, it\'s an emergency',d:18,w:'Wrong drug, wrong dose, wrong person. Sharing antibiotics is a party for Rezi.'},
+  {t:'Say no. Suggest ORS + zinc now, and the health centre if there is blood, fever or the child is weak',d:-15,w:'Correct. Most childhood diarrhoea needs fluids, not antibiotics.'},
+  {t:'Give them, but tell her to buy her own tomorrow',d:12,w:'Still sharing, still the wrong drug. Rezi doesn\'t care who paid.'}]},
+ {s:'house',set:'After a party',p:'You ate and drank too much. Uncle says "take antibiotics to flush your system."',c:[
+  {t:'Take two capsules to clear everything out',d:16,w:'Antibiotics also kill the helpful germs in your gut. When the good germs die, Rezi gets more room.'},
+  {t:'Water, rest, light food. Antibiotics are not a detox',d:-15,w:'Correct. Your good germs are your bodyguards. Keep them.'},
+  {t:'Take just one',d:8,w:'One is still food for Rezi and still a loss for your good germs.'}]},
+ // PHARMACY
+ {s:'chemist',set:'Patent medicine shop',p:'Your child has watery stool. The vendor offers "a strong antibiotic that will stop it at once."',c:[
+  {t:'Buy the strong one',d:18,w:'Most watery diarrhoea is viral or from bad water. Rezi eats; the child doesn\'t improve.'},
+  {t:'Ask for ORS + zinc, and go to the health centre if there is blood, fever or dehydration',d:-15,w:'Correct. ORS + zinc is the real treatment. Rezi stays hungry.'},
+  {t:'Buy the antibiotic AND ORS, cover all bases',d:10,w:'ORS is good. The antibiotic is still an unnecessary meal for Rezi.'}]},
+ {s:'chemist',set:'Pharmacy counter',p:'Fever and headache. You ask for "antibiotics and malaria drugs together, to clear everything."',c:[
+  {t:'Take the combo',d:18,w:'No test, no diagnosis, two drugs. Rezi loves guesswork.'},
+  {t:'Ask for a malaria test (RDT) first, then treat what the test shows',d:-15,w:'Correct. Test before you treat. Antibiotics do not work on malaria.'},
+  {t:'Just take the malaria drug, skip the antibiotics',d:2,w:'Better than the combo, but still no test. Confirm first.'}]},
+ {s:'chemist',set:'Day 3 of 5',p:'The doctor prescribed 5 days. On day 3 you feel fine, and the tablets cost money.',c:[
+  {t:'Stop now and keep the rest for next time',d:14,w:'Rezi that survives a short course has learned your drug. The leftovers cause trouble later.'},
+  {t:'Take it exactly as prescribed. Ask the pharmacist before changing anything',d:-15,w:'Correct. Follow the plan the clinician gave you, not how you feel on day 3.'},
+  {t:'Take it every other day to stretch it',d:12,w:'A low, patchy dose is a training camp for Rezi.'}]},
+ // CLINIC
+ {s:'clinic',set:'Hospital ward visit',p:'You have come to see your aunt on the ward. There is sanitiser at the door. You are in a hurry.',c:[
+  {t:'Skip it, shake everyone\'s hand, sit on the bed',d:14,w:'Resistant germs are more common in hospitals than anywhere else. Your hands are their free ride.'},
+  {t:'Sanitise going in and coming out, and don\'t sit on patient beds',d:-15,w:'Correct. Clean hands are the cheapest AMR tool there is.'},
+  {t:'Only wash if your hands touched something dirty',d:4,w:'Germs don\'t announce themselves. Make hand hygiene automatic.'}]},
+ {s:'clinic',set:'Dressing room',p:'A small cut on your leg. You ask the nurse for antibiotics "to prevent infection."',c:[
+  {t:'Insist. You know your body',d:14,w:'A clean wound doesn\'t need antibiotics. You\'d be feeding Rezi, not treating the cut.'},
+  {t:'Clean it, cover it, watch for redness or pus. Antibiotics only if a clinician says so',d:-15,w:'Correct. Prevention here is soap, water and a clean dressing.'},
+  {t:'Take the drugs home but only use them if it swells',d:6,w:'Now you have leftover antibiotics at home. See the HOME round.'}]},
+ {s:'clinic',set:'Waiting area chat',p:'Uncle says: "Resistance is for weak people. My body is strong, I can\'t get it."',c:[
+  {t:'Nod. Uncle knows',d:10,w:'It is the GERM that becomes resistant, not the person. Anyone can carry resistant Rezi, strong or not.'},
+  {t:'Explain: the germ resists the drug, not your body. Anyone can carry it and pass it on',d:-15,w:'Correct. You just taught the whole waiting room.'},
+  {t:'Say only sick people in hospitals get it',d:8,w:'Resistant germs live at home, on farms, in water and in markets too. See the map.'}]},
+ // MARKET & FARM
+ {s:'market',set:'Chicken seller, market',p:'The seller boasts that her birds got an "antibiotic booster" so they are very healthy.',c:[
+  {t:'Buy, and don\'t bother cooking it through, it\'s already medicated',d:18,w:'Antibiotics in animals breed resistant germs that can stay on the meat. Only proper cooking kills them.'},
+  {t:'Buy, cook it through, wash hands and board after handling raw meat',d:-15,w:'Correct. Thorough cooking and clean hands break the chain.'},
+  {t:'Stop eating chicken forever',d:2,w:'No need. Well-cooked meat is safe. Handling and cooking are what matter.'}]},
+ {s:'market',set:'Vegetable stall',p:'The farmer used chicken droppings as manure on the ugwu leaves you are buying.',c:[
+  {t:'Nibble some raw on the way home, it\'s fresh',d:14,w:'Animal waste can carry resistant germs onto soil and leaves. Eating it raw is a direct delivery.'},
+  {t:'Wash well with clean water, cook when you can',d:-15,w:'Correct. Washing and cooking knock Rezi off your plate.'},
+  {t:'Quick rinse with whatever water is nearby',d:6,w:'Dirty water can add germs, not remove them.'}]},
+ {s:'market',set:'Friend\'s compound',p:'You pet the goat and play with the dog. The suya arrives. Your hands are ready.',c:[
+  {t:'Eat with your hands, it\'s just a goat',d:14,w:'Resistant germs move between animals and people. Pets and petting zoos included.'},
+  {t:'Wash hands with soap after the animals, before the food',d:-15,w:'Correct. Animals to hands to mouth is Rezi\'s road. You blocked it.'},
+  {t:'Wipe your hands on your trousers, that\'s fine',d:10,w:'Trousers are not soap. Rezi is still on your fingers.'}]},
+ // WATER
+ {s:'water',set:'Your street',p:'A septic tank is leaking into the gutter, close to the borehole everyone draws water from.',c:[
+  {t:'Ignore it, it\'s not your tank',d:14,w:'Untreated sewage carries antibiotics and resistant germs into the water everyone drinks.'},
+  {t:'Report it to the landlord / local government. Boil or treat drinking water until it\'s fixed',d:-15,w:'Correct. Water is where resistance travels quietly. You stopped it.'},
+  {t:'Just avoid that side of the street',d:6,w:'The borehole can\'t avoid it. Report it.'}]},
+ {s:'water',set:'Kitchen drawer',p:'You find expired antibiotics. How do you get rid of them?',c:[
+  {t:'Flush them down the toilet or the gutter',d:14,w:'Antibiotics in water train Rezi for the whole community.'},
+  {t:'Return them to a pharmacy take-back, or seal them in the bin as local guidance says. Never the gutter',d:-15,w:'Correct. Keep drugs out of water and soil.'},
+  {t:'Give them to someone who might need them',d:18,w:'Expired, unprescribed and shared. Three mistakes in one move.'}]},
+ {s:'water',set:'Stream near a farm',p:'Hot afternoon. The stream looks clean. Farm runoff enters it upstream.',c:[
+  {t:'Drink from it, it\'s clear',d:18,w:'Resistant germs and drug residue from farms and factories flow into rivers. Clear is not clean.'},
+  {t:'Don\'t drink untreated water. Use boiled or treated water, and cover any cuts',d:-15,w:'Correct. Treated water, every time.'},
+  {t:'Just rinse your mouth, don\'t swallow',d:8,w:'A mouth rinse is still an entry point.'}]},
+ // TRAVEL
+ {s:'travel',set:'Back from a trip',p:'You just got back from travelling with an upset stomach. A friend says "take the Cipro I brought from abroad."',c:[
+  {t:'Take it right away',d:18,w:'Travellers carry resistant germs home. Random imported antibiotics make it worse.'},
+  {t:'ORS and rest. See a clinic if there is blood, fever or it lasts over two days, and tell them you travelled',d:-15,w:'Correct. Telling the clinician about your travel changes how they treat you.'},
+  {t:'Take an anti-diarrhoea tablet only and carry on',d:6,w:'Better than Cipro, but with blood or fever, still see a clinic.'}]},
+ {s:'travel',set:'Packing',p:'You are packing for a trip. "I should buy some antibiotics to carry along, just in case."',c:[
+  {t:'Buy them, take one at the first sneeze',d:18,w:'A sneeze is a virus. Antibiotics in your luggage end up as self-prescribing.'},
+  {t:'Pack ORS, sanitiser, and check your vaccinations. See a clinician if you fall ill',d:-15,w:'Correct. A travel kit is for prevention, not antibiotics.'},
+  {t:'Carry them but promise not to touch them',d:6,w:'Leftover drugs in your bag are a temptation. Leave them.'}]},
+ // STREET & SCHOOL
+ {s:'street',set:'Gym',p:'You have a cut on your hand. Your friend offers to share a towel and mat.',c:[
+  {t:'Share, no problem',d:14,w:'Germs spread person to person at the gym, at school and through handshakes. An open cut is an open door.'},
+  {t:'Use your own towel, wipe the equipment, cover the cut',d:-15,w:'Correct. Skin contact and shared gear are Rezi\'s highway. You closed it.'},
+  {t:'Use the towel but skip the mat',d:8,w:'Half caution, half risk.'}]},
+ {s:'street',set:'School gate',p:'Your child has a cough. The teacher says keep them home. Mum wants to send them in with leftover amoxicillin "so it doesn\'t spread."',c:[
+  {t:'Send them in with the amoxicillin',d:18,w:'Leftover antibiotics don\'t stop a virus spreading. Rezi eats, and the class is still exposed.'},
+  {t:'Keep them home, fluids, cover coughs. Health centre if breathing is fast or the fever is high',d:-15,w:'Correct. Staying home is what actually protects the class.'},
+  {t:'Send them in with sanitiser only',d:8,w:'Sanitiser helps, but a coughing child in class still spreads germs.'}]},
+ {s:'street',set:'Bus stop',p:'Someone sneezes, everyone shakes hands, and you are about to eat roasted plantain with those hands.',c:[
+  {t:'Eat. This is Lagos',d:12,w:'Hand to mouth after a round of handshakes is how germs move through a community.'},
+  {t:'Wash or sanitise before you eat',d:-15,w:'Correct. Twenty seconds beats Rezi every time.'},
+  {t:'Eat with the other hand',d:8,w:'Rezi doesn\'t check which hand.'}]}
+];
+const TRICKS=[
+ ['Pump it out','Rezi grows pumps that push the drug straight back out.','Like bailing water out of a canoe faster than it comes in.'],
+ ['Break the drug','He makes enzymes that chop the antibiotic to pieces.','Like scissors cutting up a letter before anyone reads it.'],
+ ['Lock the door','He changes or shrinks his entry points so the drug can\'t get in.','Like a house that bricked up most of its windows.'],
+ ['Change the lock','He reshapes the part the drug grabs, so the key no longer fits.','You changed the lock; the old key is useless.'],
+ ['Send decoys','He makes far more targets than the drug can bind.','Like hiding one real exam paper in a pile of fakes.'],
+ ['Share the answers','He hands his trick directly to nearby germs, even other species.','Passing exam answers around the room, so everyone passes.']
+];
+const STRAINS=[['Crimson','#F5054E'],['Toxic','#9bf500'],['Violet','#b36bff'],['Cyber','#19e6ff'],['Inferno','#ff7a1a'],['Acid','#f2ff2e']];
+const PLEDGES=['No antibiotics without a test or a clinician','Finish the course exactly as prescribed','I won\'t share or borrow antibiotics','Wash hands before food and after animals','Expired drugs go back to the pharmacy, not the gutter','ORS + zinc first for diarrhoea','Cook meat through, wash vegetables well','I\'ll correct one uncle this month'];
+const STAGES=[[10,'STARVED','shrunk to nothing 😵'],[30,'SPORE','small… hungry… weak'],[55,'REZI','still here 😏'],[80,'BUFFED','eating well 💪'],[101,'BOSS','I RUN THIS NOW 👑']];
+
+/* ---------- state ---------- */
+const $=id=>document.getElementById(id);
+let state,strain=STRAINS[0][1],sound=true,idle;
+let tally={plays:0,wins:0};try{tally=JSON.parse(localStorage.getItem('rezi-tally'))||tally}catch(e){}
+function saveTally(){try{localStorage.setItem('rezi-tally',JSON.stringify(tally))}catch(e){}}
+function showTally(){$('plays').textContent=tally.plays;$('wins').textContent=tally.wins}
+showTally();
+
+/* ---------- audio ---------- */
+let ac;function beep(f,dur=.08,type='square',g=.06){if(!sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),v=ac.createGain();o.type=type;o.frequency.value=f;v.gain.value=g;o.connect(v).connect(ac.destination);o.start();v.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+dur);o.stop(ac.currentTime+dur)}catch(e){}}
+const sfx={good(){beep(660,.07);setTimeout(()=>beep(990,.12),80)},bad(){beep(220,.15,'sawtooth');setTimeout(()=>beep(140,.25,'sawtooth'),120)},mid(){beep(440,.1)},tap(){beep(520,.04)},win(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.15),i*110))},lose(){[400,300,200,120].forEach((f,i)=>setTimeout(()=>beep(f,.2,'sawtooth'),i*140))}};
+$('snd').onclick=()=>{sound=!sound;$('snd').textContent=sound?'SOUND ON':'SOUND OFF';$('snd').setAttribute('aria-pressed',sound)};
+
+/* ---------- Rezi renderer ---------- */
+function stageOf(p){return STAGES.find(s=>p<s[0])}
+function drawRezi(cv,p,col,t=0){
+  const c=cv.getContext('2d'),W=cv.width,H=cv.height;c.clearRect(0,0,W,H);
+  const idx=STAGES.indexOf(stageOf(p));
+  const r=40+p*0.9, cx=W/2, cy=H/2+10, wob=Math.sin(t/300)*4;
+  c.save();c.translate(cx,cy);
+  c.shadowColor=col;c.shadowBlur=30;
+  c.fillStyle=col;c.beginPath();
+  for(let a=0;a<Math.PI*2;a+=Math.PI/14){const rr=r+Math.sin(a*5+t/400)*(4+idx*2)+wob;c.lineTo(Math.cos(a)*rr,Math.sin(a)*rr*0.9)}
+  c.closePath();c.fill();c.shadowBlur=0;
+  const spikes=[0,0,4,10,16][idx];c.fillStyle='#fff';
+  for(let i=0;i<spikes;i++){const a=i/spikes*Math.PI*2;const x=Math.cos(a)*(r-4),y=Math.sin(a)*(r-4)*0.9;c.beginPath();c.moveTo(x,y);c.lineTo(Math.cos(a+.12)*(r+18),Math.sin(a+.12)*(r+18)*0.9);c.lineTo(Math.cos(a-.12)*(r+18),Math.sin(a-.12)*(r+18)*0.9);c.fill()}
+  const ey=-r*0.2, ex=r*0.35;c.fillStyle='#0b0a10';
+  if(idx<=1){
+    c.lineWidth=5;c.strokeStyle='#0b0a10';[[-ex,ey],[ex,ey]].forEach(([x,y])=>{c.beginPath();c.moveTo(x-9,y-9);c.lineTo(x+9,y+9);c.moveTo(x+9,y-9);c.lineTo(x-9,y+9);c.stroke()});
+    c.fillStyle='#9ad8ff';c.beginPath();c.ellipse(ex+22,ey+10+Math.sin(t/200)*3,5,8,0,0,7);c.fill();
+  } else {
+    c.beginPath();c.ellipse(-ex,ey,12,idx>=3?10:14,0,0,7);c.ellipse(ex,ey,12,idx>=3?10:14,0,0,7);c.fill();
+    c.fillStyle='#fff';c.beginPath();c.arc(-ex+4,ey-4,4,0,7);c.arc(ex+4,ey-4,4,0,7);c.fill();
+    if(idx>=3){c.strokeStyle='#0b0a10';c.lineWidth=6;c.beginPath();c.moveTo(-ex-14,ey-18);c.lineTo(-ex+8,ey-10);c.moveTo(ex+14,ey-18);c.lineTo(ex-8,ey-10);c.stroke()}
+  }
+  c.strokeStyle='#0b0a10';c.lineWidth=5;c.beginPath();
+  if(idx<=1){c.arc(0,r*0.35,16,Math.PI*1.15,Math.PI*1.85)}else{c.arc(0,r*0.15,20+idx*4,0.15*Math.PI,0.85*Math.PI)}
+  c.stroke();
+  if(idx>=3){c.fillStyle='#fff';for(let i=-2;i<=2;i++){c.beginPath();c.moveTo(i*12-5,r*0.3);c.lineTo(i*12+5,r*0.3);c.lineTo(i*12,r*0.3+12);c.fill()}}
+  if(idx===4){c.fillStyle='#ffd400';c.beginPath();c.moveTo(-34,-r-6);c.lineTo(-34,-r-40);c.lineTo(-17,-r-20);c.lineTo(0,-r-48);c.lineTo(17,-r-20);c.lineTo(34,-r-40);c.lineTo(34,-r-6);c.fill()}
+  c.restore();
+}
+let anim={cv:null,p:50,col:strain};
+function loop(t){if(anim.cv&&!anim.cv.closest('.screen[hidden]'))drawRezi(anim.cv,anim.p,anim.col,t);requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+function setRezi(cv,p){anim.cv=cv;anim.p=p;anim.col=strain}
+
+/* ---------- screens ---------- */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!==id);resetIdle(id)}
+function resetIdle(id){clearTimeout(idle);if(id!=='s-attract')idle=setTimeout(()=>{show('s-attract');setRezi($('cv0'),50)},120000)}
+document.addEventListener('pointerdown',()=>{const cur=[...document.querySelectorAll('.screen')].find(s=>!s.hidden);if(cur)resetIdle(cur.id)});
+
+$('legend').innerHTML=SPACES.map(s=>`<span>${s.ic} ${s.n}</span>`).join('');
+setRezi($('cv0'),50);
+$('start').onclick=()=>{sfx.tap();show('s-strain')};
+
+$('strains').innerHTML=STRAINS.map(([n,c],i)=>`<button type="button" class="strain" data-c="${c}" aria-pressed="${i===0}"><i style="background:${c};color:${c}"></i>${n.toUpperCase()}</button>`).join('');
+$('strains').onclick=e=>{const b=e.target.closest('.strain');if(!b)return;sfx.tap();document.querySelectorAll('.strain').forEach(x=>x.setAttribute('aria-pressed',x===b));strain=b.dataset.c};
+$('go').onclick=startGame;
+
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function startGame(){
+  const order=SPACES.slice().sort(()=>Math.random()-.5);
+  bossShown=false;$('boss').hidden=true;state={p:50,i:0,originShown:false,rounds:order.map(s=>({space:s,q:pick(Q.filter(q=>q.s===s.id)),res:null})),good:0,bad:0,streak:0,best:0};
+  tally.plays++;saveTally();showTally();
+  show('s-play');render();
+}
+function render(){
+  const r=state.rounds[state.i];
+  $('map').innerHTML=state.rounds.map((x,i)=>`<div class="${i===state.i?'now':x.res||''}"><em>${x.space.ic}</em>${x.space.n}</div>`).join('');
+  $('roundlbl').textContent=`${state.i+1}/7`;
+  $('where').innerHTML=`${r.space.ic} ${r.space.n} <span>· ${r.q.set}</span>`;
+  $('prompt').textContent=r.q.p;
+  $('choices').innerHTML=r.q.c.map((c,i)=>`<button type="button" class="choice" data-i="${i}"><kbd>${i+1}</kbd><span>${c.t}</span></button>`).join('');
+  $('why').hidden=true;$('next').hidden=true;$('origin').hidden=true;
+  updateDevice($('cv'),$('fill'),$('pwr'),$('stage'),$('quip'));
+  $('quip').textContent=pick(['Feed me a little, please 🙏','What will you choose? 👀','I\'m watching you…','Go on, make a mistake 😈','No pressure, I\'m just starving']);
+}
+function updateDevice(cv,fill,pwr,stageEl,quipEl){const s=stageOf(state.p);setRezi(cv,state.p);fill.style.width=state.p+'%';pwr.textContent=state.p;stageEl.textContent=s[1];if(quipEl)quipEl.textContent=s[2];
+  const glass=cv.closest('.glass');const idx=STAGES.indexOf(s);glass.classList.toggle('over',idx>=3);glass.classList.toggle('cracked',idx>=4)}
+let bossShown=false,bossTimer;
+function bossBurst(){
+  if(bossShown)return;bossShown=true;
+  $('boss').hidden=false;document.querySelector('.app').classList.add('shake');
+  setTimeout(()=>document.querySelector('.app').classList.remove('shake'),600);
+  const start=performance.now();
+  (function f(t){if($('boss').hidden)return;drawRezi($('cvb'),100,strain,t);if(t-start<3200)requestAnimationFrame(f);else $('boss').hidden=true})(start);
+}
+$('choices').onclick=e=>{const b=e.target.closest('.choice');if(b&&!b.disabled)choose(+b.dataset.i)};
+function choose(i){
+  const r=state.rounds[state.i],c=r.q.c[i];
+  const kind=c.d<0?'good':c.d>=12?'bad':'mid';
+  state.p=Math.max(0,Math.min(100,state.p+c.d));
+  if(kind==='good'){state.good++;state.streak++;state.best=Math.max(state.best,state.streak)}else{state.bad++;state.streak=0}
+  r.res=kind==='good'?'good':'bad';
+  sfx[kind]();
+  document.querySelectorAll('.choice').forEach((b,j)=>{b.disabled=true;const k=r.q.c[j];b.classList.add(k.d<0?'good':k.d>=12?'bad':'mid');if(j===i)b.classList.add('picked')});
+  $('why').className='why '+kind;$('why').hidden=false;
+  $('whytag').textContent=kind==='good'?`REZI STARVES −${Math.abs(c.d)} PWR`:`REZI FEEDS +${c.d} PWR`;
+  $('whytext').textContent=c.w;
+  updateDevice($('cv'),$('fill'),$('pwr'),$('stage'),$('quip'));
+  if(STAGES.indexOf(stageOf(state.p))===4)bossBurst();else bossShown=false;
+  if(kind!=='good'&&!state.originShown){state.originShown=true;$('origin').hidden=false}
+  $('quip').textContent=kind==='good'?pick(['Ugh! I\'m starving 😩','Who sent you? 😭','That wasn\'t tasty at all…']):pick(['Yum yum! 😋','You like me too much 😈','More, more, more!']);
+  $('next').hidden=false;$('next').textContent=state.i===6?'SEE RESULT ▶':'NEXT SPACE ▶';$('next').focus();
+  $('map').children[state.i].className=r.res;
+}
+$('next').onclick=()=>{sfx.tap();if(state.i<6){state.i++;render()}else result()};
+
+function result(){
+  show('s-result');
+  const won=state.p<=30;
+  updateDevice($('cv2'),$('fill2'),$('pwr2'),$('stage2'),$('quip2'));
+  $('verdict').className=won?'':'lost';
+  $('verdict').textContent=state.p<=10?'REZI IS COMPLETELY STARVED':won?'REZI IS HUNGRY. GOOD.':state.p<=55?'REZI IS STILL AROUND. HMM.':state.p<=80?'YOU FED REZI VERY WELL':'REZI IS THE BOSS NOW 👑';
+  $('sum').textContent=won?`Across ${state.good} of 7 spaces you gave Rezi nothing to eat. That is how resistance dies: one correct move at a time, everywhere it hides.`:`Rezi fed in ${state.bad} space${state.bad>1?'s':''}. Every one of them happens in real life, and every one can be reversed. Play again and see where it catches you.`;
+  $('k-score').textContent=score();$('k-good').textContent=state.good;$('k-bad').textContent=state.bad;$('k-streak').textContent=state.best;
+  $('tricks').innerHTML=TRICKS.map(([a,b,c])=>`<li><b>${a}</b>${b}<i>${c}</i></li>`).join('');
+  $('pills').innerHTML=PLEDGES.map(p=>`<button type="button" class="pill" aria-pressed="false">${p}</button>`).join('');
+  $('card').hidden=true;$('copy').hidden=true;$('toast').textContent='';$('pname').value='';$('pledgebox').hidden=false;$('minibox').hidden=true;myEntryId=null;
+  if(won){tally.wins++;saveTally();showTally();sfx.win()}else sfx.lose();
+}
+$('pills').onclick=e=>{const b=e.target.closest('.pill');if(!b)return;sfx.tap();b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true')};
+let cardText='';
+$('seal').onclick=()=>{
+  const picked=[...document.querySelectorAll('.pill[aria-pressed="true"]')].map(b=>b.textContent);
+  if(!picked.length){$('toast').textContent='PICK AT LEAST ONE ACTION';return}
+  const name=$('pname').value.trim()||'A Microbe Madness guest';
+  $('card').innerHTML=`<div class="cn">REZI</div><div class="ct">ONE ACTION PLEDGE · SCORE ${score()} · REZI PWR ${state.p} · ${stageOf(state.p)[1]}</div><div><b>${name}</b> promises:</div><ul>${picked.map(p=>`<li>${p}</li>`).join('')}</ul><div class="foot">ART FOR HEALTH INITIATIVE · MICROBE MADNESS 2.0 · #MicrobeMadness #OneActionForOurFuture</div>`;
+  cardText=`🦠 REZI — I scored ${score()} and starved Rezi the superbug down to PWR ${state.p} (${stageOf(state.p)[1]}) at Microbe Madness 2.0!\n\nMy One Action:\n${picked.map(p=>'• '+p).join('\n')}\n\n#MicrobeMadness #OneActionForOurFuture @artforhealthinitiative`;
+  $('card').hidden=false;$('copy').hidden=false;$('pledgebox').hidden=true;sfx.win();submitEntry(name,picked);
+};
+$('copy').onclick=()=>{navigator.clipboard.writeText(cardText).then(()=>{$('toast').textContent='COPIED. PASTE INTO WHATSAPP.'}).catch(()=>{$('toast').textContent='SCREENSHOT THE CARD INSTEAD.'})};
+$('again').onclick=()=>{sfx.tap();show('s-attract');setRezi($('cv0'),50)};
+
+
+/* ---------- score + leaderboard ---------- */
+function score(){return (100-state.p)+state.best*10}
+let myEntryId=null,entries=[],dbRef=null,useDb=false;
+function localBoard(){try{return JSON.parse(localStorage.getItem('rezi-board'))||[]}catch(e){return []}}
+function saveLocalBoard(a){try{localStorage.setItem('rezi-board',JSON.stringify(a.slice(0,200)))}catch(e){}}
+function sortEntries(a){return a.slice().sort((x,y)=>y.score-x.score||(x.ts||0)-(y.ts||0))}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function rowHTML(e,i,mine){return `<div class="row ${i===0?'top':''} ${mine?'me':''}"><div class="rk">${i+1}</div><div><div class="nm">${esc(e.name)}</div><div class="pl">${esc((e.pledges||[]).join(' · '))}</div></div><div class="sc">${e.score}<small>PWR ${e.pwr} · ${esc(e.stage||'')}</small></div></div>`}
+function renderBoard(){
+  const list=sortEntries(entries);
+  $('boardrows').innerHTML=list.length?list.slice(0,20).map((e,i)=>rowHTML(e,i,e.id===myEntryId)).join(''):'<p class="empty">No players yet. Be the first.</p>';
+  $('boardsub').textContent=`${list.length} player${list.length===1?'':'s'} · Score = how far you starved Rezi + 10 per streak move${useDb?'':' · offline: this screen only'}`;
+  if(myEntryId){const idx=list.findIndex(e=>e.id===myEntryId);const around=list.slice(Math.max(0,idx-2),idx+3);
+    $('minititle').textContent=idx>=0?`YOU ARE #${idx+1} OF ${list.length}`:'LEADERBOARD';
+    $('minirows').innerHTML=around.map(e=>rowHTML(e,list.indexOf(e),e.id===myEntryId)).join('');$('minibox').hidden=false}
+}
+const API='/api/scores';let pollTimer;
+async function loadBoard(){
+  try{const r=await fetch(API,{cache:'no-store'});if(!r.ok)throw 0;const j=await r.json();entries=j.entries||[];useDb=true}
+  catch(e){useDb=false;entries=localBoard()}
+  renderBoard();
+}
+loadBoard();
+setInterval(()=>{if(!$('s-board').hidden||!$('s-result').hidden)loadBoard()},15000);
+async function submitEntry(name,picked){
+  const e={name,score:score(),pwr:state.p,stage:stageOf(state.p)[1],pledges:picked,good:state.good,streak:state.best,ts:Date.now()};
+  e.id='p'+e.ts+Math.random().toString(36).slice(2,6);myEntryId=e.id;
+  try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(e)});if(!r.ok)throw 0;const j=await r.json();entries=j.entries||[];useDb=true}
+  catch(err){useDb=false;entries=[...localBoard(),e];saveLocalBoard(entries)}
+  renderBoard();
+}
+$('boardbtn').onclick=()=>{sfx.tap();renderBoard();show('s-board')};
+$('boardback').onclick=()=>{sfx.tap();show('s-attract');setRezi($('cv0'),50)};
+$('boardplay').onclick=()=>{sfx.tap();show('s-strain')};
+
+/* keyboard for a clicker/keyboard at the booth */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  const cur=[...document.querySelectorAll('.screen')].find(s=>!s.hidden);if(!cur)return;
+  if(cur.id==='s-play'){
+    if(['1','2','3'].includes(e.key)&&$('next').hidden)choose(+e.key-1);
+    else if((e.key==='Enter'||e.key===' ')&&!$('next').hidden){e.preventDefault();$('next').click()}
+  } else if(e.key==='Enter'||e.key===' '){e.preventDefault();const m={'s-attract':'start','s-strain':'go','s-result':'again'};if(m[cur.id])$(m[cur.id]).click()}
+});
+</script>
+</body>
+</html>
